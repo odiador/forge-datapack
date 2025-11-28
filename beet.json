@@ -1,0 +1,12 @@
+{
+  "name": "Dualot pack",
+  "description": "Odiador's forge data pack",
+  "require": [
+    "bolt"
+  ],
+  "data_pack": {
+    "load": ["src"]
+  },
+  "pipeline": [ "bolt", "mecha" ],
+  "output": "build"
+}

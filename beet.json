@@ -8,5 +8,11 @@
     "load": ["src"]
   },
   "pipeline": [ "bolt", "mecha" ],
-  "output": "build"
+  "output": "build",
+  "meta": {
+    "bolt": {
+      "entrypoint": ["odiador:main"]
+    }
+    
+  }
 }

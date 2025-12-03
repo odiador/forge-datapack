@@ -1,0 +1,60 @@
+
+function odiador:load:
+    tellraw @a {"text":"Odiador datapack inicializado","color":"green"}
+    function odiador:set_forge
+function odiador:set_forge:
+
+    execute unless entity @e[tag=odiador_forge_marker]:
+        tellraw @a {"text":"Aún no cuentas con la forja","color":"red"}
+        tellraw @p ["",{text:"Haz clic ",color:"yellow"},{text:"AQUÍ",color:"green",click_event:{action:"run_command",command:
+        "give @s minecraft:armor_stand[minecraft:entity_data={Invisible:true,Invulnerable:true,PersistenceRequired:true, Marker: true,CustomName:{text:\"Ubicación de la forja\"},Tags:[\"odiador_forge_marker\"],id:\"minecraft:armor_stand\"},minecraft:custom_name={text:\"Ponlo donde quieres la forja\"}] 1"},hover_event:{action:"show_text",value:[{text:"Obtener item de forja",color:"green"}]}},{text:" para obtener el item para poner la forja",color:"yellow"}]
+        tellraw @p ["",{text:"Cuando la ubiques, dale clic ",color:"aqua"},{text:"AQUÍ",color:"green",click_event:{action:"run_command",command:"function odiador:set_forge"},hover_event:{action:"show_text",value:[{text:"Establecer la forja aquí",color:"green"}]}}, {text:" para terminar la inicialización",color:"aqua"}]
+    execute as @e[type=armor_stand,limit=1] at @s:
+            unless block ~ ~ ~ minecraft:crafter:
+                tellraw @a {"text":"Forja ubicada","color":"yellow"}
+                setblock ~ ~ ~ minecraft:crafter{CustomName:{"text":"Forja","color":"black","italic":false, "bold":true}} replace
+            
+
+
+function odiador:validate:
+    execute unless entity @e[tag=odiador_forge_marker]:
+        return fail
+    execute as @e[tag=odiador_forge_marker,limit=1] at @s:
+
+        unless block ~ ~ ~ minecraft:crafter:
+            return fail
+        unless data block ~ ~ ~ Items[{ Slot:4b,id: "minecraft:netherite_chestplate", 
+            components:{ "minecraft:enchantments":{ "minecraft:unbreaking":3, "minecraft:protection":4, "minecraft:mending":1} }}]:
+            return fail
+
+        if data block ~ ~ ~ Items[{Slot:4b}].components.minecraft:custom_model_data.strings:
+            return fail
+        unless data block ~ ~ ~ Items[{id:"minecraft:echo_shard", count:1}].components."minecraft:custom_model_data"{strings:["void_shard"]}:
+            return fail
+        
+        function odiador:upgrade_chestplate
+
+function odiador:upgrade_chestplate:
+    execute as @e[tag=odiador_forge_marker,limit=1] at @s:
+        data merge block ~ ~ ~ {Items:[{Slot:4b,components:{"minecraft:attribute_modifiers":[{amount:4.0d,id:"minecraft:1764693255612",\
+        operation:"add_value",slot:"armor",type:"minecraft:armor_toughness"},{amount:8.0d,id:"minecraft:1764693255613",operation:"add_value",\
+        slot:"armor",type:"minecraft:armor"},{amount:0.2d,id:"minecraft:1764693255614",operation:"add_value",slot:"armor",\
+        type:"minecraft:knockback_resistance"},{amount:4.0d,id:"minecraft:1764693255615",operation:"add_value",slot:"armor",\
+        type:"minecraft:max_health"}],"minecraft:custom_name":{bold:1b,color:"yellow",italic:0b,text:"Void Hunter Chestplate"},\
+        "minecraft:enchantments":{"minecraft:mending":1,"minecraft:protection":4,"minecraft:unbreaking":3},\
+        "custom_model_data":{"strings":["void_hunter_chestplate"]},\
+        },count:1,\
+        id:"minecraft:netherite_chestplate"}]}
+        particle minecraft:dragon_breath ~ ~ ~ 0 0 0 0.2 1000
+        particle minecraft:soul_fire_flame ~ ~ ~ 0 0 0 0.2 1000
+        playsound minecraft:block.anvil.use master @a ~ ~ ~
+        playsound minecraft:entity.lightning_bolt.thunder master @a ~ ~ ~
+
+
+append function_tag minecraft:load {
+    "values": [ "odiador:load" ]
+}
+
+append function_tag minecraft:tick {
+    "values": [ "odiador:validate" ]
+}
